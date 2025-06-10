@@ -1,0 +1,38 @@
+{
+  "id": "daggerheart",
+  "title": "Daggerheart",
+  "description": "An implementation of the Daggerheart RPG system for Foundry VTT",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "authors": [
+    {
+      "name": "Sude"
+    }
+  ],
+  "esmodules": [
+    "module/daggerheart.mjs"
+  ],
+  "styles": [
+    "styles/daggerheart.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English", 
+      "path": "lang/en.json"
+    }
+  ],
+  "grid": {
+    "distance": 5,
+    "units": "ft"
+  },
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "stress",
+  "url": "https://github.com/sudeengin/foundry-daggerheart",
+  "manifest": "https://github.com/sudeengin/foundry-daggerheart/releases/latest/download/system.json",
+  "download": "https://github.com/sudeengin/foundry-daggerheart/releases/latest/download/daggerheart.zip"
+}

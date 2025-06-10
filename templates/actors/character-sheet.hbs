@@ -1,0 +1,93 @@
+<form class="{{cssClass}} daggerheart character-sheet" autocomplete="off">
+  
+  <!-- Header -->
+  <header class="sheet-header">
+    <div class="header-row">
+      <div class="name-section">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Character Name"/>
+      </div>
+      <div class="level-section">
+        <label>Level</label>
+        <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" min="1" max="10"/>
+      </div>
+    </div>
+  </header>
+
+  <!-- Traits Section -->
+  <section class="traits-section">
+    <h2>Character Traits</h2>
+    <div class="traits-grid">
+      
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="agility">
+          <h3>AGILITY</h3>
+          <div class="trait-value">{{system.traits.agility}}</div>
+          <small>Sprint, Leap, Maneuver</small>
+        </button>
+        <input type="number" name="system.traits.agility" value="{{system.traits.agility}}" data-dtype="Number"/>
+      </div>
+
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="strength">
+          <h3>STRENGTH</h3>
+          <div class="trait-value">{{system.traits.strength}}</div>
+          <small>Lift, Smash, Grapple</small>
+        </button>
+        <input type="number" name="system.traits.strength" value="{{system.traits.strength}}" data-dtype="Number"/>
+      </div>
+
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="finesse">
+          <h3>FINESSE</h3>
+          <div class="trait-value">{{system.traits.finesse}}</div>
+          <small>Control, Hide, Tinker</small>
+        </button>
+        <input type="number" name="system.traits.finesse" value="{{system.traits.finesse}}" data-dtype="Number"/>
+      </div>
+
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="instinct">
+          <h3>INSTINCT</h3>
+          <div class="trait-value">{{system.traits.instinct}}</div>
+          <small>Perceive, Sense, Navigate</small>
+        </button>
+        <input type="number" name="system.traits.instinct" value="{{system.traits.instinct}}" data-dtype="Number"/>
+      </div>
+
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="presence">
+          <h3>PRESENCE</h3>
+          <div class="trait-value">{{system.traits.presence}}</div>
+          <small>Charm, Perform, Deceive</small>
+        </button>
+        <input type="number" name="system.traits.presence" value="{{system.traits.presence}}" data-dtype="Number"/>
+      </div>
+
+      <div class="trait-block">
+        <button type="button" class="trait-roll" data-trait="knowledge">
+          <h3>KNOWLEDGE</h3>
+          <div class="trait-value">{{system.traits.knowledge}}</div>
+          <small>Recall, Analyze, Comprehend</small>
+        </button>
+        <input type="number" name="system.traits.knowledge" value="{{system.traits.knowledge}}" data-dtype="Number"/>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Hope Section -->
+  <section class="hope-section">
+    <h3>Hope</h3>
+    <div class="hope-tracker">
+      {{#each (range 6) as |i|}}
+        <div class="hope-diamond {{#if (lt i ../system.hope)}}filled{{/if}}">♦</div>
+      {{/each}}
+    </div>
+    <div class="hope-controls">
+      <button type="button" class="hope-btn" data-action="add-hope">+</button>
+      <span>{{system.hope}}/6</span>
+      <button type="button" class="hope-btn" data-action="remove-hope">-</button>
+    </div>
+  </section>
+
+</form>

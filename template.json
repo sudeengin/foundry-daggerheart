@@ -1,0 +1,72 @@
+{
+  "Actor": {
+    "types": ["character", "npc"],
+    "templates": {
+      "base": {
+        "health": {
+          "value": 10,
+          "max": 10
+        },
+        "stress": {
+          "value": 0,
+          "max": 10
+        },
+        "biography": ""
+      },
+      "traits": {
+        "traits": {
+          "agility": 0,
+          "strength": 0,
+          "finesse": 0,
+          "instinct": 0,
+          "presence": 0,
+          "knowledge": 0
+        }
+      }
+    },
+    "character": {
+      "templates": ["base", "traits"],
+      "level": 1,
+      "hope": 2,
+      "evasion": 10,
+      "experiences": []
+    },
+    "npc": {
+      "templates": ["base", "traits"],
+      "level": 1,
+      "difficulty": 10
+    }
+  },
+  "Item": {
+    "types": ["weapon", "armor", "spell", "equipment"],
+    "templates": {
+      "base": {
+        "description": "",
+        "source": ""
+      }
+    },
+    "weapon": {
+      "templates": ["base"],
+      "trait": "agility",
+      "range": "melee",
+      "damage": {
+        "dice": "d8",
+        "type": "physical"
+      },
+      "hands": 1
+    },
+    "armor": {
+      "templates": ["base"],
+      "thresholds": {
+        "minor": 5,
+        "major": 11
+      },
+      "score": 3
+    },
+    "spell": {
+      "templates": ["base"],
+      "domain": "arcana",
+      "level": 1
+    }
+  }
+}
