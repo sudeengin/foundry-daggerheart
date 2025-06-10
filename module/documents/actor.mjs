@@ -39,18 +39,54 @@ export class DaggerheartActor extends Actor {
   }
 
   /**
-   * Make a trait roll
+   * Make a trait roll with optional Hope spending
    */
   async rollTrait(traitName, options = {}) {
     const traitValue = this.system.traits?.[traitName] || 0;
     const difficulty = options.difficulty || 10;
+    const spendHope = options.spendHope || false;
+    const useExperience = options.useExperience || false;
     
+    // Check if we can spend Hope
+    if (spendHope && !this.canSpendHope(1)) {
+      ui.notifications.warn(`${this.name} doesn't have enough Hope!`);
+      return null;
+    }
+
+    if (useExperience && !this.canSpendHope(1)) {
+      ui.notifications.warn(`${this.name} needs 1 Hope to use Experience!`);
+      return null;
+    }
+
+    // Calculate modifiers and formula
+    let totalModifier = traitValue;
+    let rollFormula = "2d12 + @modifier";
+    let hopeSpentMessage = "";
+    let hopeToSpend = 0;
+    
+    if (useExperience) {
+      totalModifier += 2;
+      hopeSpentMessage += " (Experience +2)";
+      hopeToSpend += 1;
+    }
+    
+    if (spendHope) {
+      rollFormula = "2d12 + 1d6 + @modifier";
+      hopeSpentMessage += " (Hope +1d6)";
+      hopeToSpend += 1;
+    }
+
+    // Spend Hope before rolling
+    if (hopeToSpend > 0) {
+      await this.spendHope(hopeToSpend);
+    }
+
     // Import our roll class
     const { DaggerheartRoll } = await import("../dice/daggerheart-roll.mjs");
     
     // Create the roll
-    const roll = new DaggerheartRoll("2d12 + @modifier", 
-      { modifier: traitValue }, 
+    const roll = new DaggerheartRoll(rollFormula, 
+      { modifier: totalModifier }, 
       { difficulty, trait: traitName }
     );
     
@@ -68,7 +104,7 @@ export class DaggerheartActor extends Actor {
           background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
         ">
           <h3 style="margin: 0 0 10px 0; color: #8B4513;">
-            🗡️ ${this.name} - ${traitName.toUpperCase()} Roll
+            🗡️ ${this.name} - ${traitName.toUpperCase()} Roll${hopeSpentMessage}
           </h3>
           <div style="font-size: 18px; margin: 5px 0;">
             <strong>Total: ${roll.total}</strong> vs Difficulty ${difficulty}
@@ -87,6 +123,9 @@ export class DaggerheartActor extends Actor {
             <strong>${roll.getOutcomeDescription()}</strong>
           </div>
           ${roll.isCritical ? '<div style="text-align: center; font-size: 20px; color: gold;">🎉 CRITICAL SUCCESS! 🎉</div>' : ''}
+          <div style="font-size: 12px; color: #666; margin-top: 8px;">
+            Hope: ${this.system.hope}/6 | Modifier: +${totalModifier}
+          </div>
         </div>
       `,
       type: CONST.CHAT_MESSAGE_TYPES.OTHER
@@ -94,7 +133,7 @@ export class DaggerheartActor extends Actor {
 
     ChatMessage.create(messageData);
 
-    // Handle Hope/Fear generation (we'll implement this next)
+    // Handle Hope/Fear generation
     if (roll.generatesHope()) {
       await this.addHope(1);
     }
@@ -102,13 +141,27 @@ export class DaggerheartActor extends Actor {
     return roll;
   }
 
-  /**
-   * Add Hope tokens to character
+/**
+   * Check if character can spend Hope
    */
-  async addHope(amount) {
+  canSpendHope(amount) {
     const currentHope = this.system.hope || 0;
-    const newHope = Math.min(currentHope + amount, 6); // Max 6 Hope
+    return currentHope >= amount;
+  }
+
+  /**
+   * Spend Hope tokens
+   */
+  async spendHope(amount) {
+    const currentHope = this.system.hope || 0;
+    if (currentHope < amount) {
+      ui.notifications.warn(`${this.name} doesn't have enough Hope!`);
+      return false;
+    }
+    
+    const newHope = Math.max(currentHope - amount, 0);
     await this.update({"system.hope": newHope});
-    ui.notifications.info(`${this.name} gains ${amount} Hope!`);
+    ui.notifications.info(`${this.name} spends ${amount} Hope! (${newHope}/6)`);
+    return true;
   }
 }

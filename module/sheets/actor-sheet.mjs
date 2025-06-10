@@ -56,8 +56,8 @@ export class DaggerheartActorSheet extends ActorSheet {
     const element = event.currentTarget;
     const trait = element.dataset.trait;
     
-    // Simple dialog for difficulty
-    const difficulty = await new Promise((resolve) => {
+    // Enhanced dialog with Hope spending options
+    const result = await new Promise((resolve) => {
       new Dialog({
         title: `${trait.toUpperCase()} Roll`,
         content: `
@@ -66,6 +66,18 @@ export class DaggerheartActorSheet extends ActorSheet {
               <label>Difficulty:</label>
               <input type="number" name="difficulty" value="10" min="5" max="30" step="1"/>
             </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" name="spendHope"/> 
+                Spend 1 Hope for +1d6 bonus ${this.actor.canSpendHope(1) ? '💎' : '(Not enough Hope)'}
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" name="useExperience"/> 
+                Use Experience for +2 bonus (1 Hope) ${this.actor.canSpendHope(1) ? '📜' : '(Not enough Hope)'}
+              </label>
+            </div>
           </form>
         `,
         buttons: {
@@ -73,8 +85,10 @@ export class DaggerheartActorSheet extends ActorSheet {
             icon: '<i class="fas fa-dice"></i>',
             label: "Roll",
             callback: (html) => {
-              const diff = parseInt(html.find('[name="difficulty"]').val()) || 10;
-              resolve(diff);
+              const difficulty = parseInt(html.find('[name="difficulty"]').val()) || 10;
+              const spendHope = html.find('[name="spendHope"]').is(':checked');
+              const useExperience = html.find('[name="useExperience"]').is(':checked');
+              resolve({ difficulty, spendHope, useExperience });
             }
           },
           cancel: {
@@ -87,8 +101,8 @@ export class DaggerheartActorSheet extends ActorSheet {
       }).render(true);
     });
 
-    if (difficulty !== null) {
-      this.actor.rollTrait(trait, { difficulty });
+    if (result) {
+      this.actor.rollTrait(trait, result);
     }
   }
 

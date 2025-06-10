@@ -25,51 +25,45 @@ export class DaggerheartRoll extends Roll {
     }
 
     /**
-     * Process the two d12s to determine Hope/Fear and outcome
-     */
-    _processDualityDice() {
-        const dice = this.dice[0];
-        const results = dice.results.map(r => r.result);
-        
-        if (results.length !== 2) {
-            console.error("Daggerheart rolls must have exactly 2d12");
-            return;
-        }
-
-        const [die1, die2] = results;
-        const total = this.total;
-        
-        // Determine which die is higher for Hope/Fear
-        if (die1 > die2) {
-            this.hopeResult = die1;
-            this.fearResult = die2;
-        } else if (die2 > die1) {
-            this.hopeResult = die2;
-            this.fearResult = die1;
-        } else {
-            // Equal dice = Critical Success
-            this.hopeResult = die1;
-            this.fearResult = die2;
-            this.isCritical = true;
-        }
-        
-        // Determine success/failure and Hope/Fear outcome
-        const isSuccess = total >= this.difficulty;
-        const isHopeHigher = this.hopeResult >= this.fearResult;
-        
-        if (this.isCritical) {
-            this.outcomeType = "critical-success";
-        } else if (isSuccess && isHopeHigher) {
-            this.outcomeType = "success-with-hope";
-        } else if (isSuccess && !isHopeHigher) {
-            this.outcomeType = "success-with-fear";
-        } else if (!isSuccess && isHopeHigher) {
-            this.outcomeType = "failure-with-hope";
-        } else {
-            this.outcomeType = "failure-with-fear";
-        }
+ * Process the two d12s to determine Hope/Fear and outcome
+ */
+_processDualityDice() {
+    const dice = this.dice[0];
+    const results = dice.results.map(r => r.result);
+    
+    if (results.length !== 2) {
+        console.error("Daggerheart rolls must have exactly 2d12");
+        return;
     }
 
+    const [die1, die2] = results;
+    const total = this.total;
+    
+    // FIXED: Assign dice correctly - die1 is Hope die, die2 is Fear die
+    this.hopeResult = die1;
+    this.fearResult = die2;
+    
+    // Check for Critical Success (both dice equal)
+    if (die1 === die2) {
+        this.isCritical = true;
+    }
+    
+    // Determine success/failure and Hope/Fear outcome
+    const isSuccess = total >= this.difficulty;
+    const isHopeHigher = this.hopeResult > this.fearResult;
+    
+    if (this.isCritical) {
+        this.outcomeType = "critical-success";
+    } else if (isSuccess && isHopeHigher) {
+        this.outcomeType = "success-with-hope";
+    } else if (isSuccess && !isHopeHigher) {
+        this.outcomeType = "success-with-fear";
+    } else if (!isSuccess && isHopeHigher) {
+        this.outcomeType = "failure-with-hope";
+    } else {
+        this.outcomeType = "failure-with-fear";
+    }
+}
     /**
      * Get outcome description from the rulebook
      */
