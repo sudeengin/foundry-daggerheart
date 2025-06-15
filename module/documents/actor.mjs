@@ -84,6 +84,9 @@ export class DaggerheartActor extends Actor {
     // Import our roll class
     const { DaggerheartRoll } = await import("../dice/daggerheart-roll.mjs");
     
+    // DEBUG: Log what we're sending to the roll
+console.log("DEBUG - Formula:", rollFormula, "Modifier:", totalModifier);
+
     // Create the roll
     const roll = new DaggerheartRoll(rollFormula, 
       { modifier: totalModifier }, 
@@ -106,6 +109,13 @@ export class DaggerheartActor extends Actor {
           <h3 style="margin: 0 0 10px 0; color: #8B4513;">
             🗡️ ${this.name} - ${traitName.toUpperCase()} Roll${hopeSpentMessage}
           </h3>
+          <div style="background: #ffffcc; padding: 5px; margin: 5px; border: 1px solid #ccc; font-size: 12px;">
+      <strong>🔍 DEBUG:</strong><br>
+      Roll outcome: ${roll.outcomeType}<br>
+      Should generate hope: ${roll.generatesHope()}<br>
+      Hope result: ${roll.hopeResult}<br>
+      Fear result: ${roll.fearResult}
+    </div>
           <div style="font-size: 18px; margin: 5px 0;">
             <strong>Total: ${roll.total}</strong> vs Difficulty ${difficulty}
           </div>
@@ -133,6 +143,21 @@ export class DaggerheartActor extends Actor {
 
     ChatMessage.create(messageData);
 
+   // DEBUG: Check if roll should generate Hope - show in chat
+const debugInfo = `
+  <div style="background: #ffffcc; padding: 5px; margin: 5px; border: 1px solid #ccc;">
+    <strong>🔍 DEBUG:</strong><br>
+    Roll outcome: ${roll.outcomeType}<br>
+    Should generate hope: ${roll.generatesHope()}<br>
+    Hope result: ${roll.hopeResult}<br>
+    Fear result: ${roll.fearResult}<br>
+    Hope > Fear: ${roll.hopeResult > roll.fearResult}
+  </div>
+`;
+
+// Add debug info to the chat message
+// Find the messageData content and add debugInfo to it
+
     // Handle Hope/Fear generation
     if (roll.generatesHope()) {
       await this.addHope(1);
@@ -148,7 +173,19 @@ export class DaggerheartActor extends Actor {
     const currentHope = this.system.hope || 0;
     return currentHope >= amount;
   }
-
+  
+/**
+ * Add Hope tokens to character
+ */
+async addHope(amount) {
+  const currentHope = this.system.hope || 0;
+  const newHope = Math.min(currentHope + amount, 6); // Max 6 Hope
+  await this.update({"system.hope": newHope});
+  
+  if (newHope > currentHope) {
+    ui.notifications.info(`${this.name} gains ${amount} Hope! (${newHope}/6)`);
+  }
+}
   /**
    * Spend Hope tokens
    */
