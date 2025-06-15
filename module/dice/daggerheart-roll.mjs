@@ -5,7 +5,7 @@
 export class DaggerheartRoll extends Roll {
     constructor(formula, data = {}, options = {}) {
         // Ensure we're always rolling 2d12 for Daggerheart
-        super("2d12 + @modifier", data, options);
+        super(formula, data, options);
         
         this.difficulty = options.difficulty || 10;
         this.traitUsed = options.trait || "unknown";

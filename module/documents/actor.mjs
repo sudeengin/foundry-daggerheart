@@ -110,12 +110,19 @@ console.log("DEBUG - Formula:", rollFormula, "Modifier:", totalModifier);
             🗡️ ${this.name} - ${traitName.toUpperCase()} Roll${hopeSpentMessage}
           </h3>
           <div style="background: #ffffcc; padding: 5px; margin: 5px; border: 1px solid #ccc; font-size: 12px;">
-      <strong>🔍 DEBUG:</strong><br>
-      Roll outcome: ${roll.outcomeType}<br>
-      Should generate hope: ${roll.generatesHope()}<br>
-      Hope result: ${roll.hopeResult}<br>
-      Fear result: ${roll.fearResult}
-    </div>
+  <strong>🔍 DEBUG:</strong><br>
+  Formula: ${rollFormula}<br>
+  Modifier: ${totalModifier}<br>
+  Experience bonus: ${useExperience ? '+2' : 'none'}<br>
+  Hope bonus: ${spendHope ? '+1d6' : 'none'}<br>
+  Bonuses used: ${[useExperience ? 'Experience (+2)' : '', spendHope ? 'Hope (+1d6)' : ''].filter(b => b).join(', ') || 'None'}<br>
+  Roll outcome: ${roll.outcomeType}<br>
+  Should generate hope: ${roll.generatesHope()}<br>
+  Hope result: ${roll.hopeResult}<br>
+  Fear result: ${roll.fearResult}<br>
+  Individual dice: ${roll.dice.map(d => `${d.faces}d${d.number}: [${d.results.map(r => r.result).join(', ')}]`).join(' + ')}${useExperience ? ' + 2 (Experience)' : ''}<br>
+  Final total: ${roll.total}
+</div>
           <div style="font-size: 18px; margin: 5px 0;">
             <strong>Total: ${roll.total}</strong> vs Difficulty ${difficulty}
           </div>
